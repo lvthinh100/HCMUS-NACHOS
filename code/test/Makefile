@@ -1,0 +1,103 @@
+# use normal make for this Makefile
+#
+# Makefile for building user programs to run on top of Nachos
+#
+# Several things to be aware of:
+#
+#    Nachos assumes that the location of the program startup routine (the
+# 	location the kernel jumps to when the program initially starts up)
+#       is at location 0.  This means: start.o must be the first .o passed 
+# 	to ld, in order for the routine "Start" to be loaded at location 0
+#
+
+# if you are cross-compiling, you need to point to the right executables
+# and change the flags to ld and the build procedure for as
+
+GCCDIR = ../../../gnu-decstation-ultrix/decstation-ultrix/2.95.3/
+
+LDFLAGS = -T script -N
+ASFLAGS = -mips2
+CPPFLAGS = $(INCDIR)
+
+# if you aren't cross-compiling:
+# GCCDIR =
+# LDFLAGS = -N -T 0
+# ASFLAGS =
+# CPPFLAGS = -P $(INCDIR)
+
+PATH = $(GCCDIR):/lib:/usr/bin:/bin
+
+CC = $(GCCDIR)gcc -B../../../gnu-decstation-ultrix/
+AS = $(GCCDIR)as
+LD = $(GCCDIR)ld
+
+CPP = gcc -E
+INCDIR =-I../userprog -I../threads
+CFLAGS = -G 0 -c $(INCDIR)
+
+all: halt shell matmult sort createfile read_int print_int int_sys msg bubblesort
+
+start.o: start.s ../userprog/syscall.h
+	$(CPP) $(CPPFLAGS) start.c > strt.s
+	$(AS) $(ASFLAGS) -o start.o strt.s
+	rm strt.s
+
+halt.o: halt.c
+	$(CC) $(CFLAGS) -c halt.c
+halt: halt.o start.o
+	$(LD) $(LDFLAGS) start.o halt.o -o halt.coff
+	../bin/coff2noff halt.coff halt
+
+shell.o: shell.c
+	$(CC) $(CFLAGS) -c shell.c
+shell: shell.o start.o
+	$(LD) $(LDFLAGS) start.o shell.o -o shell.coff
+	../bin/coff2noff shell.coff shell
+
+sort.o: sort.c
+	$(CC) $(CFLAGS) -c sort.c
+sort: sort.o start.o
+	$(LD) $(LDFLAGS) start.o sort.o -o sort.coff
+	../bin/coff2noff sort.coff sort
+
+matmult.o: matmult.c
+	$(CC) $(CFLAGS) -c matmult.c
+matmult: matmult.o start.o
+	$(LD) $(LDFLAGS) start.o matmult.o -o matmult.coff
+	../bin/coff2noff matmult.coff matmult
+
+createfile.o: createfile.c
+	$(CC) $(CFLAGS) -c createfile.c
+createfile: createfile.o start.o
+	$(LD) $(LDFLAGS) start.o createfile.o -o createfile.coff
+	../bin/coff2noff createfile.coff createfile
+
+read_int.o: read_int.c
+	$(CC) $(CFLAGS) -c read_int.c
+read_int: read_int.o start.o
+	$(LD) $(LDFLAGS) start.o read_int.o -o read_int.coff
+	../bin/coff2noff read_int.coff read_int
+
+print_int.o: print_int.c
+	$(CC) $(CFLAGS) -c print_int.c
+print_int: print_int.o start.o
+	$(LD) $(LDFLAGS) start.o print_int.o -o print_int.coff
+	../bin/coff2noff print_int.coff print_int
+
+int_sys.o: int_sys.c
+	$(CC) $(CFLAGS) -c int_sys.c
+int_sys: int_sys.o start.o
+	$(LD) $(LDFLAGS) start.o int_sys.o -o int_sys.coff
+	../bin/coff2noff int_sys.coff int_sys
+
+msg.o: msg.c
+	$(CC) $(CFLAGS) -c msg.c
+msg: msg.o start.o
+	$(LD) $(LDFLAGS) start.o msg.o -o msg.coff
+	../bin/coff2noff msg.coff msg
+
+bubblesort.o: bubblesort.c
+	$(CC) $(CFLAGS) -c bubblesort.c
+bubblesort: bubblesort.o start.o
+	$(LD) $(LDFLAGS) start.o bubblesort.o -o bubblesort.coff
+	../bin/coff2noff bubblesort.coff bubblesort
